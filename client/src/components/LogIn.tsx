@@ -1,14 +1,25 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { UserContext } from "../main";
+import axios from "axios";
 
 export default function LogIn() {
+  const { user, id, setUser, setId } = useContext(UserContext);
   const [isCreatingAccount, setIsCreatingAccount] = useState(true);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const url = isCreatingAccount ? "/signup" : "/login";
+    e.preventDefault();
+    const { data } = await axios.post(url, { username, password });
+    setUser(username);
+    setId(data._id);
+  };
+
   return (
     <>
       <div className="h-full flex flex-col justify-center items-center gap-3 mb-12">
-        <form className="flex flex-col gap-3">
+        <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
           <input
             id="username"
             type="text"
@@ -32,24 +43,32 @@ export default function LogIn() {
           <button className="text-white bg-sky-700 text-lg rounded-md py-1">
             {isCreatingAccount ? "Sign up" : "Log in"}
           </button>
-          {isCreatingAccount ? (
-            <p>
-              Have an account?{" "}
-              <a href="#" className="text-sky-700 underline">
-                Sign in
-              </a>
-              .
-            </p>
-          ) : (
-            <p>
-              Don't have an account?{" "}
-              <a href="#" className="text-sky-700 underline">
-                Create one
-              </a>
-              .
-            </p>
-          )}
         </form>
+        {isCreatingAccount ? (
+          <p>
+            Have an account?{" "}
+            <button
+              className="text-sky-700 underline"
+              onClick={() => {
+                setIsCreatingAccount(false);
+              }}>
+              Sign in
+            </button>
+            .
+          </p>
+        ) : (
+          <p>
+            Don't have an account?{" "}
+            <button
+              className="text-sky-700 underline"
+              onClick={() => {
+                setIsCreatingAccount(true);
+              }}>
+              Create one
+            </button>
+            .
+          </p>
+        )}
       </div>
     </>
   );
