@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "./main";
 import LogIn from "./components/LogIn";
+import Messages from "./components/Messages";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 
@@ -14,7 +15,7 @@ export default function App() {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data } = await axios.get("/profile");
+      const { data } = await axios.get("/users/profile");
       setUser(data.username);
       setId(data._id);
     };
@@ -24,7 +25,7 @@ export default function App() {
   if (user !== "") {
     return (
       <UserContext.Provider value={{ user, id, setUser, setId }}>
-        <p>Hi {user}!</p>
+        <Messages />
       </UserContext.Provider>
     );
   }

@@ -3,13 +3,13 @@ import { UserContext } from "../main";
 import axios from "axios";
 
 export default function LogIn() {
-  const { user, id, setUser, setId } = useContext(UserContext);
-  const [isCreatingAccount, setIsCreatingAccount] = useState(true);
+  const { setUser, setId } = useContext(UserContext);
+  const [isCreatingAccount, setIsCreatingAccount] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    const url = isCreatingAccount ? "/signup" : "/login";
+    const url = isCreatingAccount ? "/users/signup" : "/users/login";
     e.preventDefault();
     const { data } = await axios.post(url, { username, password });
     setUser(username);
@@ -52,7 +52,7 @@ export default function LogIn() {
               onClick={() => {
                 setIsCreatingAccount(false);
               }}>
-              Sign in
+              Log in
             </button>
             .
           </p>
@@ -64,7 +64,7 @@ export default function LogIn() {
               onClick={() => {
                 setIsCreatingAccount(true);
               }}>
-              Create one
+              Sign up
             </button>
             .
           </p>
