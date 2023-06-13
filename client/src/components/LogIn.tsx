@@ -4,9 +4,9 @@ import axios from "axios";
 
 export default function LogIn() {
   const { setUser, setId } = useContext(UserContext);
-  const [isCreatingAccount, setIsCreatingAccount] = useState(true);
-  const [username, setUsername] = useState("jace_malcom");
-  const [password, setPassword] = useState("12345678");
+  const [isCreatingAccount, setIsCreatingAccount] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<string[] | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
