@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
+import { body, validationResult } from "express-validator";
 import { Request, Response, NextFunction } from "express";
 import { User } from "../models/User";
 
@@ -46,32 +47,58 @@ usersRouter.post("/login", async (req: Request, res: Response) => {
             .json({ _id: user?._id });
         });
       } else {
-        res.status(403).json("Password not correct.");
+        res.json({ errors: ["Incorrect password."] });
+        return;
       }
     } else {
-      res.status(404).json("User not found.");
+      res.json({ errors: ["No user with that username."] });
+      return;
     }
   } catch (err) {
-    res.status(500).json("Something went wrong.");
+    console.log(err);
+    res.json({ errors: ["Something went wrong."] });
   }
 });
 
-// Need to add validation with express validator
-usersRouter.post("/signup", async (req: Request, res: Response) => {
-  const { username, password } = req.body;
-  try {
-    const newUser = await User.create({ username, password });
-    jwt.sign({ _id: newUser._id, username }, jwtSecret, {}, (err, token) => {
-      if (err) console.log(err);
-      res
-        .cookie("token", token, { sameSite: "none", secure: true })
-        .status(201)
-        .json({ _id: newUser._id });
-    });
-  } catch (err) {
-    console.log(err);
-  }
-});
+usersRouter.post("/signup", [
+  body("username")
+    .trim()
+    .isLength({ min: 3, max: 30 })
+    .escape()
+    .withMessage("Username must be at least 3 characters."),
+  body("password")
+    .isLength({ min: 8, max: 30 })
+    .escape()
+    .withMessage("Password must be at least 8 characters."),
+
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const errorMsgArray = errors.array().map((err) => err.msg);
+      res.json({ errors: errorMsgArray });
+      return;
+    }
+    try {
+      const { username, password } = req.body;
+      const userExists = await User.findOne({ username }).exec();
+      if (userExists) {
+        res.json({ errors: ["Username already taken."] });
+        return;
+      }
+      const newUser = await User.create({ username, password });
+      jwt.sign({ _id: newUser._id, username }, jwtSecret, {}, (err, token) => {
+        if (err) console.log(err);
+        res
+          .cookie("token", token, { sameSite: "none", secure: true })
+          .status(201)
+          .json({ _id: newUser._id });
+      });
+    } catch (err) {
+      console.log(err);
+      res.json({ errors: ["Something went wrong."] });
+    }
+  },
+]);
 
 usersRouter.get(
   "/cool",

@@ -4,16 +4,25 @@ import axios from "axios";
 
 export default function LogIn() {
   const { setUser, setId } = useContext(UserContext);
-  const [isCreatingAccount, setIsCreatingAccount] = useState(false);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [isCreatingAccount, setIsCreatingAccount] = useState(true);
+  const [username, setUsername] = useState("jace_malcom");
+  const [password, setPassword] = useState("12345678");
+  const [errors, setErrors] = useState<string[] | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    const url = isCreatingAccount ? "/users/signup" : "/users/login";
     e.preventDefault();
-    const { data } = await axios.post(url, { username, password });
-    setUser(username);
-    setId(data._id);
+    try {
+      const url = isCreatingAccount ? "/users/signup" : "/users/login";
+      const { data } = await axios.post(url, { username, password });
+      if (data.errors) {
+        setErrors(data.errors);
+        return;
+      }
+      setUser(username);
+      setId(data._id);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -69,6 +78,13 @@ export default function LogIn() {
             .
           </p>
         )}
+        {errors
+          ? errors.map((error, idx) => (
+              <p key={idx} className="text-red-500">
+                {error}
+              </p>
+            ))
+          : null}
       </div>
     </>
   );
