@@ -21,8 +21,8 @@ if (process.env.JWT_SECRET) {
 export const getProfile = (req: Request, res: Response) => {
   if (req.cookies.token) {
     jwt.verify(req.cookies.token, jwtSecret, {}, (err, userData) => {
-      if (err) res.json(err);
-      res.json(userData);
+      if (err) console.log(err);
+      return res.json(userData);
     });
   } else {
     res.status(401);
@@ -37,17 +37,15 @@ export const loginToProfile = async (req: Request, res: Response) => {
       if (bcrypt.compareSync(password, user.password)) {
         jwt.sign({ _id: user?._id, username }, jwtSecret, {}, (err, token) => {
           if (err) console.log(err);
-          res
+          return res
             .cookie("token", token, { sameSite: "none", secure: true })
             .json({ _id: user?._id });
         });
       } else {
-        res.json({ errors: ["Incorrect password."] });
-        return;
+        return res.json({ errors: ["Incorrect password."] });
       }
     } else {
-      res.json({ errors: ["No user with that username."] });
-      return;
+      return res.json({ errors: ["No user with that username."] });
     }
   } catch (err) {
     console.log(err);
@@ -95,3 +93,13 @@ export const createProfile = [
     }
   },
 ];
+
+export const logOutOfProfile = async (req: Request, res: Response) => {
+  try {
+    res.clearCookie("token");
+    res.end();
+  } catch (err) {
+    console.log(err);
+    res.json({ errors: ["Something went wrong."] });
+  }
+};

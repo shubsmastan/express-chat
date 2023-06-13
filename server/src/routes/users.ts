@@ -5,6 +5,7 @@ import { Request, Response } from "express";
 import {
   createProfile,
   getProfile,
+  logOutOfProfile,
   loginToProfile,
 } from "../controllers/userController";
 
@@ -27,6 +28,8 @@ usersRouter.get("/profile", getProfile);
 usersRouter.post("/login", loginToProfile);
 
 usersRouter.post("/signup", createProfile);
+
+usersRouter.delete("/logout", logOutOfProfile);
 
 usersRouter.get("/cool", (req: Request, res: Response) => {
   res.send("you're so vain, you probably think this page is about you!");

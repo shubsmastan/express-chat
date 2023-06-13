@@ -60,6 +60,8 @@ export default function LogIn() {
               className="text-sky-700 underline"
               onClick={() => {
                 setIsCreatingAccount(false);
+                setUsername("");
+                setPassword("");
               }}>
               Log in
             </button>
@@ -72,6 +74,8 @@ export default function LogIn() {
               className="text-sky-700 underline"
               onClick={() => {
                 setIsCreatingAccount(true);
+                setUsername("");
+                setPassword("");
               }}>
               Sign up
             </button>
