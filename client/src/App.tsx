@@ -7,20 +7,20 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 
 export default function App() {
-  const [user, setUser] = useState("");
+  const [user, setUser] = useState("jace_malcom");
   const [id, setId] = useState("");
 
   axios.defaults.baseURL = "http://localhost:3030";
   axios.defaults.withCredentials = true;
 
-  useEffect(() => {
-    const getUser = async () => {
-      const { data } = await axios.get("/users/profile");
-      setUser(data.username);
-      setId(data._id);
-    };
-    getUser();
-  }, []);
+  // useEffect(() => {
+  //   const getUser = async () => {
+  //     const { data } = await axios.get("/users/profile");
+  //     setUser(data.username);
+  //     setId(data._id);
+  //   };
+  //   getUser();
+  // }, []);
 
   if (user !== "") {
     return (
@@ -32,7 +32,7 @@ export default function App() {
 
   return (
     <UserContext.Provider value={{ user, id, setUser, setId }}>
-      <div className="flex flex-col justify-between items-center min-h-screen w-screen bg-indigo-200">
+      <div className="flex flex-col justify-between items-center min-h-screen w-screen bg-sky-200">
         <Header />
         <LogIn />
         <Footer />
