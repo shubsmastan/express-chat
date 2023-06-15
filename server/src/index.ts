@@ -1,14 +1,16 @@
 import express, { NextFunction, Request, Response } from "express";
+import http from "http";
 import path from "path";
+import logger from "morgan";
+import cors from "cors";
+import createError from "http-errors";
+import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import logger from "morgan";
-import createError from "http-errors";
-import cors from "cors";
-import cookieParser from "cookie-parser";
 import RateLimit from "express-rate-limit";
 import { usersRouter } from "./routes/users";
 import { messagesRouter } from "./routes/messages";
+import { Socket } from "socket.io";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
@@ -32,6 +34,24 @@ mongoose.set("strictQuery", false);
 const PORT: string | number = process.env.PORT || 3030;
 
 const app = express();
+const server = http.createServer(app);
+
+const io = require("socket.io")(server, {
+  cors: {
+    origin: hostURL || "http://localhost:5173",
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
+
+io.on("connection", (socket: Socket) => {
+  console.log("user connected", socket.id);
+  socket.on("send_message", (data) => {
+    console.log("send message event", socket);
+    io.sockets.emit("receive_message", data);
+  });
+});
+
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -64,6 +84,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   res.send(err.status + " error");
 });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

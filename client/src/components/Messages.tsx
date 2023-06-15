@@ -1,5 +1,6 @@
 import { useEffect, useContext, useState } from "react";
 import axios from "axios";
+import { socket } from "../socket";
 import { UserContext } from "../main";
 import Message from "./Message";
 
@@ -16,12 +17,29 @@ export default function Messages() {
   const [messages, setMessages] = useState<MessageProps[]>([]);
   const { user, id, setUser, setId } = useContext(UserContext);
 
+  const getMessages = async () => {
+    const { data } = await axios.get("/messages");
+    setMessages(data);
+  };
+
   useEffect(() => {
-    const getMessages = async () => {
-      const { data } = await axios.get("/messages");
-      setMessages(data);
-    };
     getMessages();
+  }, []);
+
+  useEffect(() => {
+    socket.connect();
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on("receive_message", (data) => {
+      getMessages();
+    });
+    return () => {
+      socket.off("receive_message");
+    };
   }, []);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,6 +52,7 @@ export default function Messages() {
     try {
       const message = { message: msg, username: user, id: id };
       await axios.post("/messages", message);
+      socket.emit("send_message", message);
       setMsg("");
     } catch (err) {
       console.log(err);

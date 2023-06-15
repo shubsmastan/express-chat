@@ -1,3 +1,6 @@
+import { useContext } from "react";
+import { UserContext } from "../main";
+
 type MessageProps = {
   message: string;
   username: string;
@@ -10,8 +13,15 @@ export default function Message({
   username,
   createdAt,
 }: MessageProps) {
+  const { user } = useContext(UserContext);
+
   return (
-    <div className="bg-emerald-100 rounded-md border-stone-800 py-2 px-4 my-3">
+    <div
+      className={
+        user === username
+          ? "bg-gray-100 rounded-md py-2 px-4 my-3"
+          : "bg-green-100 rounded-md py-2 px-4 my-3"
+      }>
       <p>{message}</p>
       <p className="text-xs text-gray-500">
         {username}, {createdAt.toISOString()}

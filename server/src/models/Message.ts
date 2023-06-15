@@ -10,7 +10,7 @@ const MsgSchema = new mongoose.Schema<MsgDoc>(
     message: {
       type: String,
       required: true,
-      minLength: 3,
+      minLength: 1,
     },
     user: { type: String, required: true },
   },
