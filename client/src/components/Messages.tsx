@@ -34,7 +34,7 @@ export default function Messages() {
   }, []);
 
   useEffect(() => {
-    socket.on("receive_message", (data) => {
+    socket.on("receive_message", () => {
       getMessages();
     });
     return () => {
