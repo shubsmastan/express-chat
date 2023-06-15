@@ -8,6 +8,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import RateLimit from "express-rate-limit";
 import { usersRouter } from "./routes/users";
+import { messagesRouter } from "./routes/messages";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
@@ -50,6 +51,7 @@ app.use(
 );
 
 app.use("/users", usersRouter);
+app.use("/messages", messagesRouter);
 
 app.use((req, res, next) => {
   next(createError(404));

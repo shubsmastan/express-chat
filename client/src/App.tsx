@@ -7,20 +7,20 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 
 export default function App() {
-  const [user, setUser] = useState("jace_malcom");
+  const [user, setUser] = useState("");
   const [id, setId] = useState("");
 
   axios.defaults.baseURL = "http://localhost:3030";
   axios.defaults.withCredentials = true;
 
-  // useEffect(() => {
-  //   const getUser = async () => {
-  //     const { data } = await axios.get("/users/profile");
-  //     setUser(data.username);
-  //     setId(data._id);
-  //   };
-  //   getUser();
-  // }, []);
+  useEffect(() => {
+    const getUser = async () => {
+      const { data } = await axios.get("/users/profile");
+      setUser(data.username);
+      setId(data._id);
+    };
+    getUser();
+  }, []);
 
   if (user !== "") {
     return (
