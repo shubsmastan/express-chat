@@ -3,11 +3,9 @@ import axios from "axios";
 import { UserContext } from "./main";
 import LogIn from "./components/LogIn";
 import Messages from "./components/Messages";
-import Footer from "./components/Footer";
-import Header from "./components/Header";
 
 export default function App() {
-  const [user, setUser] = useState("");
+  const [user, setUser] = useState("jace_malcom");
   const [id, setId] = useState("");
 
   axios.defaults.baseURL = "http://localhost:3030";
@@ -32,11 +30,7 @@ export default function App() {
 
   return (
     <UserContext.Provider value={{ user, id, setUser, setId }}>
-      <div className="flex flex-col justify-between items-center min-h-screen w-screen bg-sky-200">
-        <Header />
-        <LogIn />
-        <Footer />
-      </div>
+      <LogIn />
     </UserContext.Provider>
   );
 }

@@ -3,6 +3,8 @@ import axios from "axios";
 import { socket } from "../socket";
 import { UserContext } from "../main";
 import Message from "./Message";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
 type MessageProps = {
   _id: string;
@@ -78,32 +80,54 @@ export default function Messages() {
 
   return (
     <>
-      <div className="min-h-screen bg-sky-200 flex flex-col p-5">
-        <div className="flex justify-between">
-          <p>Hi {user}!</p>
-          <button
-            className="text-white bg-sky-700 text-lg rounded-md py-1 px-3"
-            onClick={logOut}>
-            Log Out
-          </button>
-        </div>
-        <div className="flex flex-col flex-grow">
-          <div className="flex-grow bg-white p-4 my-4 rounded-md">
-            {messageList}
-          </div>
-          <form className="flex gap-2" onSubmit={handleSubmit}>
-            <input
-              className="p-2 rounded-md flex-grow"
-              name="message"
-              type="text"
-              value={msg}
-              placeholder="Say something nice"
-              onChange={handleInput}
-            />
-            <button className="bg-sky-700 p-2 rounded-md text-white">
-              Send
+      <div className="bg-sky-200">
+        <div className="min-h-screen p-5 flex flex-col mx-auto lg:w-7/12">
+          <div className="flex justify-between">
+            <p>
+              👋 Hi there <span className="font-bold">{user}</span>!
+            </p>
+            <p>
+              <a href="https://github.com/shubsmastan">
+                <FontAwesomeIcon icon={faGithub} size="lg" />
+              </a>
+            </p>
+            <button
+              className="text-white bg-sky-700 text-lg rounded-md py-1 px-3"
+              onClick={logOut}>
+              Log Out
             </button>
-          </form>
+          </div>
+          <div className="flex flex-col flex-grow">
+            <div className="flex-grow bg-white p-4 my-4 rounded-md overflow-y-scroll h-[30rem]">
+              {/* Test messages for styling */}
+              {/* <Message
+              message="hello world!"
+              username="jace_malcom"
+              createdAt={new Date(Date.now())}
+              updatedAt={new Date(Date.now())}
+            />
+            <Message
+              message="hello there!"
+              username="icecoffee426"
+              createdAt={new Date(Date.now())}
+              updatedAt={new Date(Date.now())}
+            /> */}
+              {messageList}
+            </div>
+            <form className="flex gap-2" onSubmit={handleSubmit}>
+              <input
+                className="p-2 rounded-md flex-grow"
+                name="message"
+                type="text"
+                value={msg}
+                placeholder="Say something nice"
+                onChange={handleInput}
+              />
+              <button className="bg-sky-700 p-2 rounded-md text-white">
+                Send
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </>
