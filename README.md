@@ -1,13 +1,12 @@
 # Express Chat App
 
-<!-- [Live preview]().<br/><br/> -->
+[Live preview](https://shubsmastan-express-chat.netlify.app/).<br/><br/>
 
-Live preview pending...<br/><br/>
 Created as part of the Node.js frontend pathway on [The Odin Project](https://www.theodinproject.com/).
 
 ## Description
 
-Create an account, chat to your friends and send files!
+Create an account and chat to others online!
 
 ## How it was made
 
@@ -17,10 +16,10 @@ This project uses Vite/React for the frontend and Node/Express for the backend. 
 
 [@ShubsMastan](https://github.com/shubsmastan)
 
-<!-- ## Version History
+## Version History
 
-- 1.0 (10/06/2023)
-  - Initial release -->
+- 1.0.0 (16/06/2023)
+  - Initial release
 
 ## License
 
