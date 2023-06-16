@@ -8,7 +8,7 @@ export default function App() {
   const [user, setUser] = useState("");
   const [id, setId] = useState("");
 
-  axios.defaults.baseURL = import.meta.env.VITE_SERVER_URL;
+  axios.defaults.baseURL = import.meta.env.BASE_URL;
   axios.defaults.withCredentials = true;
 
   useEffect(() => {
