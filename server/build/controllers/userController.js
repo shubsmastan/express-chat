@@ -18,8 +18,10 @@ const path_1 = __importDefault(require("path"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const debug_1 = __importDefault(require("debug"));
 const express_validator_1 = require("express-validator");
 const User_1 = require("../models/User");
+(0, debug_1.default)("express-chat:user");
 dotenv_1.default.config({ path: path_1.default.resolve(__dirname, "../../.env") });
 exports.usersRouter = express_1.default.Router();
 const salt = bcryptjs_1.default.genSaltSync(10);
@@ -34,7 +36,7 @@ const getProfile = (req, res) => {
     if (req.cookies.token) {
         jsonwebtoken_1.default.verify(req.cookies.token, jwtSecret, {}, (err, userData) => {
             if (err)
-                console.log(err);
+                (0, debug_1.default)("Token could not be verified.");
             return res.json(userData);
         });
     }
@@ -51,7 +53,7 @@ const loginToProfile = (req, res) => __awaiter(void 0, void 0, void 0, function*
             if (bcryptjs_1.default.compareSync(password, user.password)) {
                 jsonwebtoken_1.default.sign({ _id: user === null || user === void 0 ? void 0 : user._id, username }, jwtSecret, {}, (err, token) => {
                     if (err)
-                        console.log(err);
+                        (0, debug_1.default)("Token could not be created.");
                     return res
                         .cookie("token", token, { sameSite: "none", secure: true })
                         .json({ _id: user === null || user === void 0 ? void 0 : user._id });
@@ -66,7 +68,7 @@ const loginToProfile = (req, res) => __awaiter(void 0, void 0, void 0, function*
         }
     }
     catch (err) {
-        console.log(err);
+        (0, debug_1.default)("Problem logging in.");
         res.json({ errors: ["Something went wrong."] });
     }
 });
@@ -88,8 +90,8 @@ exports.createProfile = [
             res.json({ errors: errorMsgArray });
             return;
         }
+        const { username, password } = req.body;
         try {
-            const { username, password } = req.body;
             const encryptedPwd = bcryptjs_1.default.hashSync(password, salt);
             const userExists = yield User_1.User.findOne({ username }).exec();
             if (userExists) {
@@ -99,7 +101,7 @@ exports.createProfile = [
             const newUser = yield User_1.User.create({ username, password: encryptedPwd });
             jsonwebtoken_1.default.sign({ _id: newUser._id, username }, jwtSecret, {}, (err, token) => {
                 if (err)
-                    console.log(err);
+                    (0, debug_1.default)("Could not create token.");
                 res
                     .cookie("token", token, { sameSite: "none", secure: true })
                     .status(201)
@@ -107,7 +109,7 @@ exports.createProfile = [
             });
         }
         catch (err) {
-            console.log(err);
+            (0, debug_1.default)("Problem creating user.");
             res.json({ errors: ["Something went wrong."] });
         }
     }),
@@ -118,7 +120,7 @@ const logOutOfProfile = (req, res) => __awaiter(void 0, void 0, void 0, function
         res.end();
     }
     catch (err) {
-        console.log(err);
+        (0, debug_1.default)("Problem logging out.");
         res.json({ errors: ["Something went wrong."] });
     }
 });

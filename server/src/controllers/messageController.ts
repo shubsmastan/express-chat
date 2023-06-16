@@ -1,10 +1,13 @@
 import express from "express";
 import path from "path";
 import dotenv from "dotenv";
+import debug from "debug";
 import { body, validationResult } from "express-validator";
 import { Request, Response } from "express";
 import { Message } from "../models/Message";
 import { User } from "../models/User";
+
+debug("express-chat:msg");
 
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 export const messagesRouter = express.Router();
@@ -38,7 +41,7 @@ export const createMessage = [
       await newMsg.save();
       res.json(newMsg);
     } catch (err) {
-      console.log(err);
+      debug("Something went wrong - message not sent.");
       res.json({ errors: ["Something went wrong."] });
     }
   },

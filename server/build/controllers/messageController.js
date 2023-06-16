@@ -16,9 +16,11 @@ exports.createMessage = exports.getMessages = exports.messagesRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const debug_1 = __importDefault(require("debug"));
 const express_validator_1 = require("express-validator");
 const Message_1 = require("../models/Message");
 const User_1 = require("../models/User");
+(0, debug_1.default)("express-chat:msg");
 dotenv_1.default.config({ path: path_1.default.resolve(__dirname, "../../.env") });
 exports.messagesRouter = express_1.default.Router();
 let jwtSecret;
@@ -50,7 +52,7 @@ exports.createMessage = [
             res.json(newMsg);
         }
         catch (err) {
-            console.log(err);
+            (0, debug_1.default)("Something went wrong - message not sent.");
             res.json({ errors: ["Something went wrong."] });
         }
     }),
