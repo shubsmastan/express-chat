@@ -30,9 +30,9 @@ const users_1 = require("./routes/users");
 const messages_1 = require("./routes/messages");
 (0, debug_1.default)("express-chat:app");
 dotenv_1.default.config({ path: path_1.default.resolve(__dirname, "../.env") });
-let mongoURI, hostURL, jwtSecret;
-if (process.env.MONGODB_URI && process.env.HOST_URL) {
-    mongoURI = process.env.MONGODB_URI;
+let mongoCred, hostURL;
+if (process.env.MONGO_CREDENTIALS && process.env.HOST_URL) {
+    mongoCred = process.env.MONGO_CREDENTIALS;
     hostURL = process.env.HOST_URL;
 }
 else {
@@ -42,7 +42,7 @@ mongoose_1.default.set("strictQuery", false);
 (function () {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            yield mongoose_1.default.connect(mongoURI);
+            yield mongoose_1.default.connect(`mongodb+srv://${process.env.MONGO_CREDENTIALS}@cluster0.o0yyfgk.mongodb.net/?retryWrites=true&w=majority`);
         }
         catch (err) {
             throw err;
@@ -51,6 +51,7 @@ mongoose_1.default.set("strictQuery", false);
 })();
 const PORT = process.env.PORT || 3030;
 exports.app = (0, express_1.default)();
+exports.app.set("port", PORT);
 const server = http_1.default.createServer(exports.app);
 const io = require("socket.io")(server, {
     cors: {

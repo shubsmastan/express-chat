@@ -19,9 +19,9 @@ debug("express-chat:app");
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
-let mongoURI: string, hostURL: string, jwtSecret: string;
-if (process.env.MONGODB_URI && process.env.HOST_URL) {
-  mongoURI = process.env.MONGODB_URI;
+let mongoCred: string, hostURL: string;
+if (process.env.MONGO_CREDENTIALS && process.env.HOST_URL) {
+  mongoCred = process.env.MONGO_CREDENTIALS;
   hostURL = process.env.HOST_URL;
 } else {
   throw new Error("Environment variables are not set.");
@@ -30,7 +30,9 @@ if (process.env.MONGODB_URI && process.env.HOST_URL) {
 mongoose.set("strictQuery", false);
 (async function () {
   try {
-    await mongoose.connect(mongoURI);
+    await mongoose.connect(
+      `mongodb+srv://${process.env.MONGO_CREDENTIALS}@cluster0.o0yyfgk.mongodb.net/?retryWrites=true&w=majority`
+    );
   } catch (err) {
     throw err;
   }
@@ -39,6 +41,7 @@ mongoose.set("strictQuery", false);
 const PORT: string | number = process.env.PORT || 3030;
 
 export const app = express();
+app.set("port", PORT);
 const server = http.createServer(app);
 
 const io = require("socket.io")(server, {

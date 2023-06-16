@@ -5,10 +5,10 @@ import LogIn from "./components/LogIn";
 import Messages from "./components/Messages";
 
 export default function App() {
-  const [user, setUser] = useState("jace_malcom");
+  const [user, setUser] = useState("");
   const [id, setId] = useState("");
 
-  axios.defaults.baseURL = "http://localhost:3030";
+  axios.defaults.baseURL = import.meta.env.VITE_SERVER_URL;
   axios.defaults.withCredentials = true;
 
   useEffect(() => {
