@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { UserContext } from "../main";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import Footer from "./Footer";
 import Header from "./Header";
 
@@ -16,13 +16,19 @@ export default function LogIn() {
     try {
       const url = isCreatingAccount ? "/users/signup" : "/users/login";
       const { data } = await axios.post(url, { username, password });
-      if (data.errors) {
-        setErrors(data.errors);
-        return;
-      }
+
       setUser(username);
       setId(data._id);
-    } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      if (err.response.data.errors) {
+        setErrors(err.response.data.errors);
+        return;
+      } else if (err.response.status === "429") {
+        setErrors(["Too many requests - please try again later."]);
+        return;
+      }
+      setErrors(["Something went wrong - please try again."]);
       console.log(err);
     }
   };

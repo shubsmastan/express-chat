@@ -17,11 +17,26 @@ type MessageProps = {
 export default function Messages() {
   const [msg, setMsg] = useState("");
   const [messages, setMessages] = useState<MessageProps[]>([]);
+  const [errors, setErrors] = useState<string[] | null>(null);
+
   const { user, id, setUser, setId } = useContext(UserContext);
 
   const getMessages = async () => {
-    const { data } = await axios.get("/messages");
-    setMessages(data);
+    try {
+      const { data } = await axios.get("/messages");
+      setMessages(data);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      if (err.response.data.errors) {
+        setErrors(err.response.data.errors);
+        return;
+      } else if (err.response.status === "429") {
+        setErrors(["Too many requests - please try again later."]);
+        return;
+      }
+      setErrors(["Something went wrong - please try again."]);
+      console.log(err);
+    }
   };
 
   useEffect(() => {
@@ -56,7 +71,16 @@ export default function Messages() {
       await axios.post("/messages", message);
       socket.emit("send_message", message);
       setMsg("");
-    } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      if (err.response.data.errors) {
+        setErrors(err.response.data.errors);
+        return;
+      } else if (err.response.status === "429") {
+        setErrors(["Too many requests - please try again later."]);
+        return;
+      }
+      setErrors(["Something went wrong - please try again."]);
       console.log(err);
     }
   };
@@ -80,7 +104,7 @@ export default function Messages() {
 
   return (
     <>
-      <div className="bg-sky-200">
+      <div className="bg-sky-200 relative">
         <div className="min-h-screen p-5 flex flex-col mx-auto lg:w-7/12">
           <div className="flex justify-between">
             <p>
@@ -129,6 +153,13 @@ export default function Messages() {
             </form>
           </div>
         </div>
+        {errors
+          ? errors.map((error, idx) => (
+              <p key={idx} className="text-red-500 absolute top-11 left-7">
+                {error}
+              </p>
+            ))
+          : null}
       </div>
     </>
   );
