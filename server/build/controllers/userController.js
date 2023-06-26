@@ -33,15 +33,22 @@ else {
     throw new Error("Environment variables are not set.");
 }
 const getProfile = (req, res) => {
-    if (req.cookies.token) {
-        jsonwebtoken_1.default.verify(req.cookies.token, jwtSecret, {}, (err, userData) => {
-            if (err)
-                (0, debug_1.default)("Token could not be verified.");
-            return res.json(userData);
+    try {
+        if (!req.cookies.token) {
+            return res.status(401).json({ errors: ["No account logged in."] });
+        }
+        jsonwebtoken_1.default.verify(req.cookies.token, jwtSecret, {}, (err, user) => {
+            if (err) {
+                return res
+                    .status(500)
+                    .json({ errors: ["Token could not be verified."] });
+            }
+            return res.json(user);
         });
     }
-    else {
-        res.status(401);
+    catch (err) {
+        (0, debug_1.default)("Promlem getting profile.");
+        return res.status(500).json({ errors: ["Something went wrong."] });
     }
 };
 exports.getProfile = getProfile;
@@ -51,25 +58,27 @@ const loginToProfile = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const user = yield User_1.User.findOne({ username });
         if (user) {
             if (bcryptjs_1.default.compareSync(password, user.password)) {
-                jsonwebtoken_1.default.sign({ _id: user === null || user === void 0 ? void 0 : user._id, username }, jwtSecret, {}, (err, token) => {
-                    if (err)
+                jsonwebtoken_1.default.sign({ _id: user._id, username }, jwtSecret, {}, (err, token) => {
+                    if (err) {
                         (0, debug_1.default)("Token could not be created.");
+                        res.status(500).json({ errors: ["Token could not be created."] });
+                    }
                     return res
                         .cookie("token", token, { sameSite: "none", secure: true })
-                        .json({ _id: user === null || user === void 0 ? void 0 : user._id });
+                        .json({ _id: user._id, username: user.username });
                 });
             }
             else {
-                return res.json({ errors: ["Incorrect password."] });
+                return res.status(400).json({ errors: ["Incorrect password."] });
             }
         }
         else {
-            return res.json({ errors: ["No user with that username."] });
+            return res.status(404).json({ errors: ["No user with that username."] });
         }
     }
     catch (err) {
         (0, debug_1.default)("Problem logging in.");
-        res.json({ errors: ["Something went wrong."] });
+        return res.status(500).json({ errors: ["Something went wrong."] });
     }
 });
 exports.loginToProfile = loginToProfile;
@@ -87,22 +96,21 @@ exports.createProfile = [
         const errors = (0, express_validator_1.validationResult)(req);
         if (!errors.isEmpty()) {
             const errorMsgArray = errors.array().map((err) => err.msg);
-            res.json({ errors: errorMsgArray });
-            return;
+            return res.status(400).json({ errors: errorMsgArray });
         }
         const { username, password } = req.body;
         try {
             const encryptedPwd = bcryptjs_1.default.hashSync(password, salt);
             const userExists = yield User_1.User.findOne({ username }).exec();
             if (userExists) {
-                res.json({ errors: ["Username already taken."] });
+                return res.status(400).json({ errors: ["Username already taken."] });
                 return;
             }
             const newUser = yield User_1.User.create({ username, password: encryptedPwd });
             jsonwebtoken_1.default.sign({ _id: newUser._id, username }, jwtSecret, {}, (err, token) => {
                 if (err)
                     (0, debug_1.default)("Could not create token.");
-                res
+                return res
                     .cookie("token", token, { sameSite: "none", secure: true })
                     .status(201)
                     .json({ _id: newUser._id });
@@ -110,18 +118,18 @@ exports.createProfile = [
         }
         catch (err) {
             (0, debug_1.default)("Problem creating user.");
-            res.json({ errors: ["Something went wrong."] });
+            return res.status(500).json({ errors: ["Something went wrong."] });
         }
     }),
 ];
 const logOutOfProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         res.clearCookie("token");
-        res.end();
+        return res.end();
     }
     catch (err) {
         (0, debug_1.default)("Problem logging out.");
-        res.json({ errors: ["Something went wrong."] });
+        return res.status(500).json({ errors: ["Something went wrong."] });
     }
 });
 exports.logOutOfProfile = logOutOfProfile;

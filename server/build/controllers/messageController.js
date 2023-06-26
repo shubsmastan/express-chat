@@ -17,6 +17,7 @@ const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const debug_1 = __importDefault(require("debug"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const express_validator_1 = require("express-validator");
 const Message_1 = require("../models/Message");
 const User_1 = require("../models/User");
@@ -31,8 +32,26 @@ else {
     throw new Error("Environment variables are not set.");
 }
 const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const messages = yield Message_1.Message.find().sort({ createdAt: 1 });
-    res.json(messages);
+    try {
+        if (!req.cookies.token) {
+            return res.status(401).json({ errors: ["You are not logged in."] });
+        }
+        jsonwebtoken_1.default.verify(req.cookies.token, jwtSecret, {}, (err, user) => {
+            if (err) {
+                return res
+                    .status(500)
+                    .json({ errors: ["Token could not be verified."] });
+            }
+        });
+        const messages = yield Message_1.Message.find().sort({ createdAt: 1 });
+        return res.json(messages);
+    }
+    catch (err) {
+        (0, debug_1.default)("Something went wrong - could not get messages.");
+        return res.json({
+            errors: ["Something went wrong - could not get messages."],
+        });
+    }
 });
 exports.getMessages = getMessages;
 exports.createMessage = [
@@ -41,19 +60,21 @@ exports.createMessage = [
         const errors = (0, express_validator_1.validationResult)(req);
         if (!errors.isEmpty()) {
             const errorMsgArray = errors.array().map((err) => err.msg);
-            res.json({ errors: errorMsgArray });
-            return;
+            return res.json({ errors: errorMsgArray });
         }
         try {
+            if (!req.cookies.token) {
+                return res.status(401).json({ errors: ["You are not logged in."] });
+            }
             const { message, username } = req.body;
             const foundUser = yield User_1.User.findOne({ username }).exec();
             const newMsg = new Message_1.Message({ message, user: foundUser === null || foundUser === void 0 ? void 0 : foundUser.username });
             yield newMsg.save();
-            res.json(newMsg);
+            return res.json(newMsg);
         }
         catch (err) {
             (0, debug_1.default)("Something went wrong - message not sent.");
-            res.json({ errors: ["Something went wrong."] });
+            return res.json({ errors: ["Something went wrong - message not sent."] });
         }
     }),
 ];

@@ -19,10 +19,6 @@ if (process.env.JWT_SECRET) {
   throw new Error("Environment variables are not set.");
 }
 
-usersRouter.get("/", (req: Request, res: Response) => {
-  res.send("respond with a resource");
-});
-
 usersRouter.get("/profile", getProfile);
 
 usersRouter.post("/login", loginToProfile);
