@@ -1,6 +1,6 @@
 # Express Chat App
 
-[Live preview](https://shubsmastan-express-chat.netlify.app/).<br/><br/>
+[Live preview](https://shubsmastan-express-chat.netlify.app/).<br/>
 
 Created as part of the Node.js frontend pathway on [The Odin Project](https://www.theodinproject.com/).
 
@@ -10,7 +10,7 @@ Create an account and chat to others online!
 
 ## How it was made
 
-This project uses Vite/React for the frontend and Node/Express for the backend. It also uses MongoDB to store the messages. Full stack app created using the popular MERN stack for web applications.
+This project uses Vite/React for the frontend and Node/Express for the backend. It also uses MongoDB to store the messages. Full stack app created using the MERN stack for web applications.
 
 ## Author
 
@@ -18,6 +18,8 @@ This project uses Vite/React for the frontend and Node/Express for the backend. 
 
 ## Version History
 
+- 1.0.1 (26/06/2023)
+- Update to ensure auth when sending messages to API
 - 1.0.0 (16/06/2023)
   - Initial release
 
