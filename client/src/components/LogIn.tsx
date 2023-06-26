@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { UserContext } from "../main";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import Footer from "./Footer";
 import Header from "./Header";
 
